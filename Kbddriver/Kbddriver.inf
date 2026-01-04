@@ -1,0 +1,62 @@
+;
+; Kbddriver.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = Keyboard
+ClassGuid   = {4d36e96b-e325-11ce-bfc1-08002be10318} 
+Provider    = %ManufacturerName%
+CatalogFile = Kbddriver.cat
+DriverVer   = 
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+Kbddriver.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%Kbddriver.DeviceDesc% = Kbddriver_Device, VMBUS\Kbddriver
+
+[Kbddriver_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+Kbddriver.sys
+
+;-------------- Service installation
+[Kbddriver_Device.NT.Services]
+AddService = Kbddriver,%SPSVCINST_ASSOCSERVICE%, Kbddriver_Service_Inst
+
+; -------------- Kbddriver driver install sections
+[Kbddriver_Service_Inst]
+DisplayName    = %Kbddriver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\Kbddriver.sys
+
+[Kbddriver_Device.NT.Wdf]
+KmdfService = Kbddriver, Kbddriver_wdfsect
+
+[Kbddriver_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "marci"
+DiskName = "Kbddriver Installation Disk"
+Kbddriver.DeviceDesc = "Keyboard Filter Device"
+Kbddriver.SVCDESC = "Keyboard Filter Service"
